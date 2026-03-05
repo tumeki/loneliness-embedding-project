@@ -1,0 +1,32 @@
+# --- macOS ---
+.DS_Store
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.env.*
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+
+# --- Data (keep raw data out of git by default) ---
+data/raw/
+data/external/
+*.csv
+*.tsv
+*.parquet
+*.jsonl
+*.pkl
+*.pickle
+
+# --- Results / large outputs ---
+results/
+outputs/
+figures/
+*.log
+
+# --- Editor ---
+.vscode/
