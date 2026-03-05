@@ -14,6 +14,7 @@ venv/
 
 # --- Data (keep raw data out of git by default) ---
 data/raw/
+Data/processed/
 data/external/
 *.csv
 *.tsv
