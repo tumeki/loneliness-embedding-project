@@ -1,131 +1,147 @@
 # 孤独研究プロジェクト — Claude Code 指示書
 
+最終更新：2026-03-18
+
+---
+
 ## 研究概要
 
-日本語コーパスにおける「孤独」概念の意味変容・意味構造を、
-単語・文章埋め込み（Word2Vec / Sentence-BERT）によって明らかにする修士論文プロジェクト。
+**修論タイトル（仮）**：日本語における孤独概念の意味空間分析
 
-主な問い：
-- 日本語の「孤独」は意味空間上でどのように立ち現れるか
-- 孤独の意味は時代によって変動しているか（歴史変動層 vs 構造的安定層）
-- 書き言葉・話し言葉・SNSで意味空間はどう異なるか
+「孤独」という概念が、個人・社会集団・時代によってどのような差異を持ち、どのように変化・変容してきたかを、先行研究のレビューと、複数のコーパスにおける計算言語学的分析を通じて明らかにする。
 
-## 三分類（分析の核心軸）
+孤独・孤立・孤高の三概念は「分類ラベル」ではなく、意味空間における**方向ベクトル**として扱う。孤独は「定義できる対象」ではなく「意味が分散したネットワーク」として存在するという分散意味論の立場（Wittgenstein → Firth/Harris → 認知言語学 → Word2Vec）をとる。
 
-| ラベル | 概念 | 水準 | 系譜 |
-|--------|------|------|------|
-| Loneliness | 主観的孤独（心理） | 感情・知覚 | Weiss, Cacioppo, UCLA尺度 |
-| Isolation | 社会的孤立（構造） | ネットワーク・配置 | Durkheim, Putnam |
-| Solitude | 選択的孤高（実践） | 自発性・価値づけ | Thoreau, Winnicott, Arendt |
+---
 
-**重要**：この三分類は「教師ラベル」ではなく「意味空間上の方向ベクトル」として扱う。
-辞書＝分類器ではなく、辞書＝意味空間のナビゲーション装置。
+## 三概念の理論的位置づけ
 
-## 分析フェーズ
+| 概念 | 英語対応 | 次元 | 主要理論的根拠 |
+|------|----------|------|----------------|
+| 孤独 | Loneliness | 主観的・情緒的 | Weiss 1973, UCLA Loneliness Scale 3rd ed. |
+| 孤立 | Isolation | 構造的・社会的 | De Jong Gierveld Scale, Putnam 2000 |
+| 孤高 | Solitude | 選択的・自律的 | Arendt 1958, Riesman 1950, LACA |
 
-### Phase 1（現在）：青空文庫での予備分析
-- 目的：手法の習得・パイプラインの構築
-- データ：青空文庫（明治〜昭和〜戦後の文学テキスト）
-- 主な分析：
-  1. 孤独関連語の時代別意味変化（Word2Vec）
-  2. 孤独・孤立・孤高の共起語比較
-  3. 埋め込み可視化（UMAP / t-SNE）
-  4. Loneliness / Isolation / Solitude 方向ベクトルの試作
+---
 
-### Phase 2（BCCWJ取得後）：本分析
-- 均衡コーパスでの本格的通時分析
-- 媒体×年代のサブコーパス比較
+## RQ・仮説
 
-### Phase 3：YouTubeコメント分析
-- 孤食動画のコメントにおける孤独の語られ方
-- 表現（動画）× 受容（コメント）× 露出面の比較
+**中心的RQ：** 日本語における「孤独」は、書き言葉・話し言葉において意味空間上どのように立ち現れる現象なのか
 
-## 実行環境
+**個別RQ：**
+- Loneliness / Isolation / Solitudeの三次元で見たとき、近代〜現代において「孤独」の語りはどのように変化してきたか
+- 孤独の意味構造には、歴史的変動層と構造的安定層が存在するか
+- YouTubeにおいて、孤独はどのような人々によってどのように表現・受容・消費されているか
+- 孤食という実践を通じて、孤独に食べることはYouTube上でどのように語られているか
 
-Google Colab をメインに使用（GPUランタイム推奨）。
-ノートブックは `notebooks/` に保存してGitHub管理。
+**主要仮説：**
+- 日本語では孤独・孤立・孤高が語彙・意味上で分化していない
+- 孤独の意味空間上の位置は時代によって変動している（孤立→孤独→孤高の意味の堆積）
+- 孤独の意味空間上の位置は文化圏ごとに差がある（日本語圏・英語圏・韓国語圏）
+- 孤独の意味空間上の位置は媒体ごとに差がある（書籍・YouTube）
 
-### 主要ライブラリ
-```
-gensim          # Word2Vec
-fugashi + unidic # MeCab形態素解析（Colab対応）
-sentence-transformers  # Sentence-BERT
-umap-learn      # 次元削減・可視化
-matplotlib / seaborn
-pandas / numpy
-```
+---
 
-### インストールコマンド（Colabセル先頭）
-```python
-!pip install fugashi unidic-lite gensim umap-learn sentence-transformers -q
-```
+## 分析設計とコーパス計画
 
-## ディレクトリ構造
+| ステップ | 内容 |
+|----------|------|
+| Step 0 | 青空文庫（予備分析・パイプライン検証） |
+| Step 1 | BCCWJ全量取得・媒体×年代でサブコーパス作成 |
+| Step 2 | Word2Vec / BERT学習、7軸による意味空間分析 |
+| Step 3 | YouTubeコメントコーパスとの意味空間比較 |
+| Step 4 | 英語圏・韓国語圏コーパスとの比較（将来的拡張） |
+
+---
+
+## 確定済みSeed Words（7軸）
+
+### 第一層：孤独固有の三軸
+
+**軸1 Loneliness ↔ Companionship**（情緒的次元）
+- 正極：寂しい、空虚、心細い、憂鬱、憂い、煩悶
+- 負極：充実、心強い、慰む、親睦、安堵、温もり
+
+**軸2 Isolation ↔ Belonging**（構造的次元）
+- 正極：孤立、断絶、隔絶、疎外、排除
+- 負極：交わり、親交、有縁、縁故
+
+**軸3 Solitude ↔ Conformity**（自律的次元）
+- 正極：孤高、独立、隠遁、独善、隠棲、高潔
+- 負極：従順、出仕、媚びる
+
+### 第二層：普遍的社会次元（Kozlowski et al. 2019準拠）
+
+**軸4 Valence 苦痛↔快** / 正極：苦しい、辛い、悲しい　負極：楽しい、嬉しい
+
+**軸5 Agency 強制↔選択** / 正極：強制、束縛、服従、拘束、圧迫　負極：自由、意志、決意、自発、選択
+
+**軸6 Gender 男性↔女性** / 正極：男性、少年、紳士、青年、息子、彼、僕、俺　負極：女性、少女、乙女、祖母、女児、彼女
+
+**軸7 Status 高地位↔低地位** / 正極：高貴、貴族　負極：貧しい、卑しい、下僕
+
+Seed word設計の検証は三層で実施：心理測定尺度（UCLA / DJG / LACA）→ 分類語彙表（WLSP）→ 先行計算言語学研究（Kozlowski et al. 2019）
+
+---
+
+## 方法論上の注意事項
+
+- **Word2Vec選択の正当化**：研究対象は「語の関係的構造（習慣的使用パターン）」であり、文脈内での個別的意味分布（BERTが対象とするもの）ではない。静的埋め込みは分散意味論系譜上にあり、本研究の問いに適合する
+- **時代比較**：Hamilton et al. 2016スタイルの静的埋め込み時系列比較を採用
+- **Belongingは孤立の負極**、**Companionshipは孤独の負極**（Weiss 1973の区分に準拠）
+
+---
+
+## 技術スタック
+
+| 役割 | ツール |
+|------|--------|
+| 実行環境 | Google Colab（大学Google Workspace） |
+| バージョン管理 | GitHub（public）`github.com/tumeki/loneliness-embedding-project` |
+| 形態素解析 | fugashi + unidic-lite |
+| 埋め込み | gensim Word2Vec |
+| 次元削減・可視化 | UMAP、matplotlib |
+| 言語資源 | 分類語彙表（WLSP）`https://raw.githubusercontent.com/masayu-a/WLSP/master/bunruidb.txt` |
+
+---
+
+## ファイル構成
 
 ```
 loneliness-embedding-project/
-├── CLAUDE.md           # この指示書
+├── notebooks/
+│   └── aozora/
+│       └── 01_aozora_analysis.ipynb   # 青空文庫予備分析
+├── docs/
+│   ├── setup_guide.md
+│   └── research_notes.md
+├── data/                               # .gitignore済み
+│   ├── raw/
+│   └── processed/
+├── CLAUDE.md
 ├── README.md
 ├── requirements.txt
-├── .gitignore
-│
-├── data/
-│   ├── raw/            # gitignore済み
-│   │   ├── aozora/
-│   │   ├── bccwj/
-│   │   └── youtube/
-│   └── processed/      # gitignore済み
-│       ├── aozora/
-│       ├── bccwj/
-│       └── youtube/
-│
-├── scripts/
-│   ├── aozora/
-│   │   ├── 01_download.py      # 青空文庫取得
-│   │   ├── 02_preprocess.py    # 前処理・トークナイズ
-│   │   └── 03_train_w2v.py     # Word2Vec学習
-│   ├── bccwj/
-│   └── utils/
-│       ├── text_cleaner.py     # テキスト正規化共通処理
-│       └── embed_utils.py      # 埋め込み共通処理
-│
-├── notebooks/
-│   ├── aozora/
-│   │   ├── 01_data_exploration.ipynb
-│   │   ├── 02_word2vec_training.ipynb
-│   │   └── 03_embedding_visualization.ipynb
-│   └── bccwj/
-│
-├── results/            # gitignore済み（ローカル・Driveに保存）
-│
-└── docs/
-    ├── research_notes.md   # 分析メモ・気づき
-    └── references.md       # 文献整理
+└── .gitignore
 ```
 
-## コーディング規則
+---
 
-- ファイル名：番号プレフィックス（01_, 02_, ...）
-- 変数名：snake_case
-- 乱数シード：`RANDOM_SEED = 42` で統一（再現性確保）
-- コメント：日本語でOK（研究ノート的に残す）
-- 各ノートブックの先頭に「このノートブックの目的」を Markdown で記載
+## 命名規則・コーディング規約
 
-## よく使うキーワード集
+- スクリプト・ノートブック：番号プレフィックス（`01_xxx`, `02_xxx`）
+- 変数：snake_case
+- 乱数シード：42（再現性統一）
+- `data/raw/` および `data/processed/` はgit管理外（.gitignore済み）
 
-孤独語彙（分析対象の中心）：
-- 孤独、孤立、孤高、寂しさ、さみしい、ひとり、独り、一人
-- 疎外、断絶、虚しさ、空虚、取り残される
-- 静謐、内省、自由、ひとり時間（Solitude側）
+---
 
-共起で見たい文脈語：
-- 感情：悲しみ、苦しみ、安らぎ、平和、恐れ
-- 社会：家族、友人、群衆、都市、社会、共同体
-- 実践：食べる、飲む、眠る、歩く、読む
+## 主要参照文献
 
-## 注意事項
-
-1. raw dataはgit管理外。GitHubにはコード・ノートブック・ドキュメントのみpush
-2. 大きなモデルファイル（.bin, .model）もgit管理外
-3. 結果の図表はresults/にローカル保存し、論文用はdocs/に整理
-4. BCCWJのデータは利用規約に従い、外部共有・公開リポジトリへのアップ不可
+- Kozlowski, A. C., Taddy, M., & Evans, J. A. (2019). The geometry of culture. *American Sociological Review.*
+- Hamilton, W. L., Leskovec, J., & Jurafsky, D. (2016). Diachronic word embeddings. *ACL.*
+- Weiss, R. S. (1973). *Loneliness: The experience of emotional and social isolation.*
+- De Jong Gierveld, J. (1985). Loneliness and the degree of intimacy in interpersonal relationships.
+- Arendt, H. (1958). *The Human Condition.*
+- Riesman, D. (1950). *The Lonely Crowd.*
+- Putnam, R. D. (2000). *Bowling Alone.*
+- 国立国語研究所（2004）分類語彙表（WLSP）
